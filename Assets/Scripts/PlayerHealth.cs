@@ -12,6 +12,18 @@ public class PlayerHealth : MonoBehaviour
     public HealthBar healthBar;
     public SpriteRenderer graphics;
 
+    public static PlayerHealth instance;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogError("PlayerHealth already exist on scene");
+        }
+
+        instance = this;
+    }
+
     private void Start()
     {
         currentHealth = maxHealth;
@@ -22,7 +34,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            TakeDamage(20);
+            TakeDamage(60);
         }
     }
 
@@ -32,10 +44,37 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth -= damage;
             healthBar.SetHealth(currentHealth);
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
+
             isInvicible = true;
             StartCoroutine(InvicibilityFlash());
             StartCoroutine(HandleInvicibityDelay());
         }
+    }
+
+    public void Die()
+    {
+        PlayerMouvement.instance.enabled = false;
+        PlayerMouvement.instance.animator.SetTrigger("OnPlayerDie");
+        PlayerMouvement.instance.rb.bodyType = RigidbodyType2D.Kinematic;
+        PlayerMouvement.instance.playerCollider.enabled = false;
+    }
+
+    public void Heal(int heal)
+    {
+        if ((currentHealth + heal) > maxHealth)
+        {
+            currentHealth = maxHealth;
+        } else
+        {
+            currentHealth += heal;
+        }
+
+        healthBar.SetHealth(currentHealth);
     }
 
     public IEnumerator InvicibilityFlash()

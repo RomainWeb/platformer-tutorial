@@ -1,0 +1,31 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class DeathZone : MonoBehaviour
+{
+    private Transform playerSpawn;
+    private Animator fadeSystem;
+
+    private void Awake()
+    {
+        playerSpawn = GameObject.FindGameObjectWithTag("Respawn").transform;
+        fadeSystem = GameObject.FindGameObjectWithTag("FadeSystem").GetComponent<Animator>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            StartCoroutine(ReplacePlayerOnScene(collision));
+        }
+    }
+
+    public IEnumerator ReplacePlayerOnScene(Collider2D collision)
+    {
+        fadeSystem.SetTrigger("FadeIn");
+        yield return new WaitForSeconds(1f);
+        collision.transform.position = playerSpawn.position;
+    }
+}

@@ -8,10 +8,24 @@ public class PlayerMouvement : MonoBehaviour
     public CharacterController2D controller;
     public float runSpeed = 40f;
     public Animator animator;
+    public Rigidbody2D rb;
+    public CapsuleCollider2D playerCollider;
 
     float horinzontalMove = 0f;
     bool jump = false;
     bool crouch = false;
+
+    public static PlayerMouvement instance;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogError("PlayerMouvement already exist on scene");
+        }
+
+        instance = this;
+    }
 
     // Update is called once per frame
     void Update()
@@ -24,14 +38,6 @@ public class PlayerMouvement : MonoBehaviour
         {
             jump = true;
             animator.SetBool("IsJumping", true);
-        }
-
-        if (Input.GetButtonDown("Crouch"))
-        {
-            crouch = true;
-        } else if (Input.GetButtonUp("Crouch"))
-        {
-            crouch = false;
         }
     }
 
